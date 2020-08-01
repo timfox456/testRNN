@@ -7,6 +7,7 @@ from utils import mkdir, delete_folder
 from sentimentTestSuite import sentimentTrainModel, sentimentGenerateTestSuite
 from mnistTestSuite import mnist_lstm_train, mnist_lstm_test
 from lipoTestSuite import lipo_lstm_train, lipo_lstm_test
+from tsTestSuite import ts_lstm_train, ts_lstm_test
 from record import record
 import re
 
@@ -78,8 +79,14 @@ def main():
         else:
             lipo_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalTest,TargMetri,CoverageStop)
         
+    elif modelName == 'ts':
+        if mode == 'train':
+            ts_lstm_train()
+        else:
+            ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalTest,TargMetri,CoverageStop)
+
     else: 
-        print("Please specify a model from {sentiment, mnist, lipo}")
+        print("Please specify a model from {sentiment, mnist, lipo, ts}")
     
     r.close()
 
