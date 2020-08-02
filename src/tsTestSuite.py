@@ -22,9 +22,9 @@ def ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalT
     # load model
     ts = tsClass()
     ts.load_data('dataset/sp500.csv', 50, True)
-    ts.load_model()
-
-    ts.train_model()
+    model = ts.load_model()
+    if not model:
+        ts.train_model()
 
 
     # minimal test dataset generation
@@ -92,8 +92,8 @@ def ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalT
         1359.150024
     ]
     # predict logD value from smiles representation
-    test_array = np.array([test_data])
-    test = np.squeeze(ts.create_sequence(test_array))
+    test_array = np.array(test_data).reshape((1,50,1))
+    test = np.array(ts.create_sequence(test_array))
     h_t, c_t, f_t = ts.cal_hidden_state(test)
 
     # input seeds

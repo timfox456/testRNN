@@ -87,20 +87,19 @@ class tsClass:
             self.model = load_model(filename,custom_objects={'rmse': rmse})
             self.model.compile(loss='mean_squared_error', optimizer='rmsprop',metrics=[rmse])
             self.model.summary()
+        return self.model
 
     def layerName(self, layer):
         layerNames = [layer.name for layer in self.model.layers]
         return layerNames[layer]
 
     def train_model(self):
-        #self.load_data()
         self.model = Sequential()
         self.model.add(LSTM(input_shape=(None,1), units=50, return_sequences=True)) 
         self.model.add(Dropout(0.2))
         self.model.add(LSTM( 100, return_sequences=False)) 
         self.model.add(Dropout(0.2)) 
         self.model.add(Dense( units=1, activation="linear")) 
-        #self.model.add(Activation("linear"))
         self.model.compile(loss="mse", optimizer="rmsprop", metrics=[rmse])
         
         print(self.model.summary())
@@ -137,6 +136,8 @@ class tsClass:
 
     # calculate the lstm hidden state and cell state manually
     def cal_hidden_state(self, test):
+        print('cal_hidden_state')
+        print(test.shape)
         acx = get_activations_single_layer(self.model, np.array([test]), self.layerName(0))
         units = int(int(self.model.layers[1].trainable_weights[0].shape[1]) / 4)
         # print("No units: ", units)
