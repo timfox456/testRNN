@@ -1,4 +1,4 @@
-from keras.layers import Dense, LSTM, Embedding, Dropout
+from keras.layers import Dense, LSTM, Embedding, Dropout, Activation
 from keras import backend
 from keras.models import *
 import pandas as pd
@@ -58,7 +58,13 @@ class tsClass:
         x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[1], 1))
         x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
 
-        self.X_train, self.X_test, self.y_train, self.y_test = (x_train, y_train, x_test, y_test)
+        self.X_train = x_train
+        self.y_train = y_train
+        self.X_test = x_test
+        self.y_test = y_test
+
+        print(self.X_train.shape)
+        print(self.y_train.shape)
 
         return [x_train, y_train, x_test, y_test]
 
@@ -69,6 +75,9 @@ class tsClass:
             normalised_window = [((float(p) / float(window[0])) - 1) for p in window]
             normalised_data.append(normalised_window)
         return normalised_data
+
+    def create_sequence(self, data):
+        return self.normalise_windows(data)
 
 
     def load_model(self):
@@ -84,20 +93,18 @@ class tsClass:
         return layerNames[layer]
 
     def train_model(self):
-        self.load_data()
-        char_num = len(self.unique_chars) + 1
-        embedding_vector_length = 8
+        #self.load_data()
         self.model = Sequential()
-        self.model.add(LSTM(input_dim=layers[0], output_dim=layers[1], return_sequences=True)) 
+        self.model.add(LSTM(input_shape=(None,1), units=50, return_sequences=True)) 
         self.model.add(Dropout(0.2))
-        self.model.add(LSTM( layers[2], return_sequences=False)) 
+        self.model.add(LSTM( 100, return_sequences=False)) 
         self.model.add(Dropout(0.2)) 
-        self.model.add(Dense( output_dim=layers[3])) 
-        self.model.add(Activation("linear"))
+        self.model.add(Dense( units=1, activation="linear")) 
+        #self.model.add(Activation("linear"))
         self.model.compile(loss="mse", optimizer="rmsprop", metrics=[rmse])
         
         print(self.model.summary())
-        self.model.fit(self.X_train,self.y_train, validation_data=(self.X_test,self.y_test), nb_epoch=300, batch_size=32)
+        self.model.fit(self.X_train,self.y_train, validation_data=(self.X_test,self.y_test), epochs=300, batch_size=32)
         self.model.save('Ts.h5')
 
     def displayInfo(self,test):

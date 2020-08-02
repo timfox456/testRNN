@@ -24,6 +24,9 @@ def ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalT
     ts.load_data('dataset/sp500.csv', 50, True)
     ts.load_model()
 
+    ts.train_model()
+
+
     # minimal test dataset generation
     if minimalTest != '0':
         ncdata = []
@@ -35,9 +38,62 @@ def ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalT
     # test layer
     layer = 1
     termin = 0
+
+    test_data = [
+        1455.219971,
+        1399.420044,
+        1402.109985,
+        1403.449951,
+        1441.469971,
+        1457.599976,
+        1438.560059,
+        1432.25,
+        1449.680054,
+        1465.150024,
+        1455.140015,
+        1455.900024,
+        1445.569946,
+        1441.359985,
+        1401.530029,
+        1410.030029,
+        1404.089966,
+        1398.560059,
+        1360.160034,
+        1394.459961,
+        1409.280029,
+        1409.119995,
+        1424.969971,
+        1424.369995,
+        1424.23999,
+        1441.719971,
+        1411.709961,
+        1416.829956,
+        1387.119995,
+        1389.939941,
+        1402.050049,
+        1387.670044,
+        1388.26001,
+        1346.089966,
+        1352.170044,
+        1360.689941,
+        1353.430054,
+        1333.359985,
+        1348.050049,
+        1366.420044,
+        1379.189941,
+        1381.76001,
+        1409.170044,
+        1391.280029,
+        1355.619995,
+        1366.699951,
+        1401.689941,
+        1395.069946,
+        1383.619995,
+        1359.150024
+    ]
     # predict logD value from smiles representation
-    smiles = np.array(['CCC(=O)O[C@@]1(CC[NH+](C[C@H]1CC=C)C)c2ccccc2'])
-    test = np.squeeze(ts.smile_vect(smiles))
+    test_array = np.array([test_data])
+    test = np.squeeze(ts.create_sequence(test_array))
     h_t, c_t, f_t = ts.cal_hidden_state(test)
 
     # input seeds
@@ -94,8 +150,6 @@ def ts_lstm_test(r,threshold_CC,threshold_MC,symbols_SQ,seq,TestCaseNum,minimalT
     sqtoe.testObjective.feature_n = list(iter.product(symb, repeat=t2-t1+1))
     sqtoe.testObjective.setOriginalNumOfFeature()
 
-    # define smile enumerator of a molecule
-    sme = SmilesEnumerator()
 
     for test in X_train:
         for i in range(4):
